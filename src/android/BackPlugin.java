@@ -1,37 +1,52 @@
 package com.globant.backplugin;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
+import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.Intent;
+import android.widget.Toast;
 
 public class BackPlugin extends CordovaPlugin {
 
 	public static final String ACTION_ADD_CALENDAR_ENTRY = "addCalendarEntry";
+
+	private CallbackContext callbackContext;
+
+	@SuppressLint("NewApi")
+	@Override
+	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+		// TODO Auto-generated method stub
+		OnBackStackChangedListener onBackStackChangedListener = new OnBackStackChangedListener() {
+
+			@Override
+			public void onBackStackChanged() {
+				Toast.makeText(BackPlugin.this.cordova.getActivity(),
+						"back called", Toast.LENGTH_LONG).show();
+				if (callbackContext != null) {
+					callbackContext.success();
+				}
+			}
+		};
+		this.cordova.getActivity().getFragmentManager()
+				.addOnBackStackChangedListener(onBackStackChangedListener);
+		Toast.makeText(this.cordova.getActivity(), "Init", Toast.LENGTH_LONG)
+				.show();
+		super.initialize(cordova, webView);
+	}
 
 	@Override
 	public boolean execute(String action, JSONArray args,
 			CallbackContext callbackContext) throws JSONException {
 		try {
 			if (ACTION_ADD_CALENDAR_ENTRY.equals(action)) {
-				JSONObject arg_object = args.getJSONObject(0);
-				Intent calIntent = new Intent(Intent.ACTION_EDIT)
-						.setType("vnd.android.cursor.item/event")
-						.putExtra("beginTime",
-								arg_object.getLong("startTimeMillis"))
-						.putExtra("endTime",
-								arg_object.getLong("endTimeMillis"))
-						.putExtra("title", arg_object.getString("title"))
-						.putExtra("description",
-								arg_object.getString("description"))
-						.putExtra("eventLocation",
-								arg_object.getString("eventLocation"));
-
-				this.cordova.getActivity().startActivity(calIntent);
-				callbackContext.success();
+				this.callbackContext = callbackContext;
 				return true;
 			}
 			callbackContext.error("Invalid action");
@@ -42,4 +57,5 @@ public class BackPlugin extends CordovaPlugin {
 			return false;
 		}
 	}
+
 }
