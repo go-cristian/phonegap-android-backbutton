@@ -3,14 +3,14 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="com.globant.backbutton"
       version="0.1.0">
-    <name>Calendar</name>
-    <description>Sample PhoneGap Calendar Plugin</description>
+    <name>Back Plugin</name>
+    <description>Sample PhoneGap Back Plugin</description>
     <license>MIT</license>
     <keywords>phonegap</keywords>
 
 
     <js-module src="www/backbutton.js" name="BackPlugin">
-        <clobbers target="window.calendar" />
+        <clobbers target="window.backPlugin" />
     </js-module>
 
     <!-- android -->
